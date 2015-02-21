@@ -165,10 +165,8 @@
                 update.originalIndex = objectIndex;
                 update.object = object;
                 [updated addObject:update];
-            } else {
-                // If there's no change in sorting then just update the object as-is
-                [self delegateDidChangeObject:object atIndex:objectIndex forChangeType:SNRFetchedResultsChangeUpdate newIndex:objectIndex];
             }
+			[self delegateDidChangeObject:object atIndex:objectIndex forChangeType:SNRFetchedResultsChangeUpdate newIndex:objectIndex];
         }
     }
     // If there were updated objects that changed the sorting then resort and notify the delegate of changes
@@ -177,7 +175,10 @@
         for (SNRFetchedResultsUpdate *update in updated) {
             // Find out then new index of the object in the content array
             NSUInteger newIndex = [sFetchedObjects indexOfObject:update.object];
-            [self delegateDidChangeObject:update.object atIndex:update.originalIndex forChangeType:SNRFetchedResultsChangeMove newIndex:newIndex];
+			// If the new index is different from the old one
+			if (update.originalIndex != newIndex) {
+				[self delegateDidChangeObject:update.object atIndex:update.originalIndex forChangeType:SNRFetchedResultsChangeMove newIndex:newIndex];
+			}
         }
     }
     for (NSManagedObject *object in insertedObjects) {
